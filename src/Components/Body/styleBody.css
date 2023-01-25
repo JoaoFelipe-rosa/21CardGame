@@ -33,16 +33,22 @@
 
 .CardStart {
 	width: 100px;
-	margin: 25px 0 25px -80px ;
+	margin: 25px 0 25px -80px;
 }
 
 .CardStart:hover {
 	transition: transform 0.3s ease-in-out;
 	transform: scale(1.1) translateX(-5%);
 }
-.text_main{
+
+.text_main {
 	text-align: center;
 	width: 30vh;
 	background-color: aliceblue;
 	border-radius: 5px;
+}
+
+.loader {
+	border: 5px;
+	color: blue;
 }

@@ -1,6 +1,9 @@
+/* eslint-disable max-len */
 import React, { useEffect, useState } from 'react';
 import './styleBody.css';
 import axios from 'axios';
+
+import Loader from '../Loader/Loader.tsx';
 
 function Home({ setMode }) {
   return (
@@ -11,47 +14,29 @@ function Home({ setMode }) {
 }
 
 function Gaming({ setMode }) {
-  // Armazena o Dek de cartas com 52
-  const [deck, setDeck] = useState(null);
+  // loading const
+  const [loading, setLoading] = useState(false);
   // Armazena as 21 cartas retiradas do do deck de 52
   const [cards, setCards] = useState([]);
   // Armazena as as pilhas de 7 cartas retiradas das 21
   const [pile, setPile] = useState({ pile1: [], pile2: [], pile3: [] });
   // Armazena em qual step o game está
-
   const [gameMode, setGameMode] = useState('STEP0');
 
-  // Pega um baralho interro com 52 cartas
-  const getDeck = async () => {
-    const response = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
-    setDeck(response.data);
-  };
-  // Pega apenas 21 cartas do baralho pego acima
-  const getCards = async () => {
-    if (deck.deck_id) {
-      const response = await axios.get(`https://deckofcardsapi.com/api/deck/${deck.deck_id}/draw/?count=21`);
-      setCards(response.data.cards);
-    }
-  };
-  // Divide o baralho em 3 pilhas
-  const getPile = () => {
-    setPile({ pile1: cards.slice(0, 7), pile2: cards.slice(7, 14), pile3: cards.slice(14, 21) });
-  };
+  useEffect(() => {
+    (async () => {
+      // Coleta e armazena o deck id
+      const deck = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+      const deckId = deck.data.deck_id;
 
-  useEffect(() => {
-    getDeck().then();
-  }, []);
-  useEffect(() => {
-    if (deck) {
-      getCards().then();
-    }
-  }, [deck]);
+      const myDeck = await axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
+      setCards(myDeck.data.cards);
 
-  useEffect(() => {
-    if (cards) {
-      getPile();
-    }
-  }, [cards]);
+      setPile({ pile1: cards.slice(0, 7), pile2: cards.slice(7, 14), pile3: cards.slice(14, 21) });
+
+      setLoading(true);
+    })();
+  }, [loading]);
 
   function redistributeCards() {
     const nextPositions = {
@@ -118,11 +103,13 @@ function Gaming({ setMode }) {
   function gameStep0() {
     return (
       <div className="flex flex-col items-center">
-        <h1 className="text_main">Memorize Your Card And Start Game </h1>
+
+        {loading === true ? <h1 className="text_main">Memorize Your Card And Start Game </h1> : <> </>}
+
         <div className="cardContent flex flex-row justify-center">
-          {cards.map((card) => <img className="CardStart" src={card.image} key={card.image} alt="card" />)}
+          {loading === true ? cards.map((card) => <img className="CardStart" src={card.image} key={card.image} alt="card" />) : <Loader />}
         </div>
-        <button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" onClick={() => (setGameMode('STEP1'))}>Start Game</button>
+        {loading === true ? <button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" onClick={() => (setGameMode('STEP1'))}>Start Game</button> : <> </>}
       </div>
     );
   }
