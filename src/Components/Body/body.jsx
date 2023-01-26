@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 /* eslint-disable max-len */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import './styleBody.css';
 import axios from 'axios';
 
@@ -16,8 +17,6 @@ function Home({ setMode }) {
 function Gaming({ setMode }) {
   // loading const
   const [loading, setLoading] = useState(false);
-  // Armazena as 21 cartas retiradas do do deck de 52
-  const [cards, setCards] = useState([]);
   // Armazena as as pilhas de 7 cartas retiradas das 21
   const [pile, setPile] = useState({ pile1: [], pile2: [], pile3: [] });
   // Armazena em qual step o game está
@@ -25,18 +24,18 @@ function Gaming({ setMode }) {
 
   useEffect(() => {
     (async () => {
-      // Coleta e armazena o deck id
-      const deck = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
-      const deckId = deck.data.deck_id;
+      setLoading(false);
 
-      const myDeck = await axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
-      setCards(myDeck.data.cards);
+      const deckResponse = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+      const deckId = deckResponse.data.deck_id;
+      const cardsResponse = await axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
+      setPile({ pile1: cardsResponse.data.cards.slice(0, 7), pile2: cardsResponse.data.cards.slice(7, 14), pile3: cardsResponse.data.cards.slice(14, 21) });
 
-      setPile({ pile1: cards.slice(0, 7), pile2: cards.slice(7, 14), pile3: cards.slice(14, 21) });
-
+      console.log('finally');
+      console.log(cardsResponse);
       setLoading(true);
     })();
-  }, [loading]);
+  }, []);
 
   function redistributeCards() {
     const nextPositions = {
@@ -101,15 +100,21 @@ function Gaming({ setMode }) {
   }
 
   function gameStep0() {
+    const cards = useMemo(() => {
+      if (pile) {
+        return [...pile.pile1, ...pile.pile2, ...pile.pile3];
+      }
+      return [];
+    }, [pile]);
     return (
       <div className="flex flex-col items-center">
 
-        {loading === true ? <h1 className="text_main">Memorize Your Card And Start Game </h1> : <> </>}
+        {loading ? <h1 className="text_main">Memorize Your Card And Start Game </h1> : <> </>}
 
         <div className="cardContent flex flex-row justify-center">
-          {loading === true ? cards.map((card) => <img className="CardStart" src={card.image} key={card.image} alt="card" />) : <Loader />}
+          {loading ? cards.map((card) => <img className="CardStart" src={card.image} key={card.image} alt="card" />) : <Loader />}
         </div>
-        {loading === true ? <button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" onClick={() => (setGameMode('STEP1'))}>Start Game</button> : <> </>}
+        {loading ? <button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" onClick={() => (setGameMode('STEP1'))}>Start Game</button> : <> </>}
       </div>
     );
   }
@@ -290,20 +295,9 @@ function Gaming({ setMode }) {
   );
 }
 
-function Result({ setMode }) {
-  // MOSTRAR RESULTADO
-  return (
-    <div className="flex flex-col items-center">
-      Result
-      <button className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" type="button" onClick={() => setMode('HOME')}>Restart Game</button>
-    </div>
-  );
-}
-
 const MODES = {
   HOME: Home,
   GAMING: Gaming,
-  RESULT: Result,
 };
 
 export default function Game() {
