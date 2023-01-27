@@ -1,7 +1,15 @@
+/* eslint-disable no-console */
+/* eslint-disable no-tabs */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable indent */
+/* eslint-disable max-len */
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 import Loader from '../Loader/Loader';
+import './stylePage.css';
 
 export default function Gaming() {
 	// loading const
@@ -253,7 +261,7 @@ export default function Gaming() {
 			<div className="flex flex-col items-center">
 				<h1 className="text_main">Is this your card?</h1>
 				<img className="p-9" src={chooseCards.image} alt="choosed card" />
-				<button className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" type="button" onClick={() => setMode('HOME')}>Restart Game</button>
+				<Link to="/"><button className="p-2 w-full rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" type="button">Restart Game</button></Link>
 			</div>
 
 		);
@@ -269,7 +277,7 @@ export default function Gaming() {
 		<div className="flex flex-col items-center">
 			<h1 className="text_main">ERROR</h1>
 			<h3 className="text_main">Please, restart the game</h3>
-			<button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" onClick={() => setMode('HOME')}>Restart</button>
+			<Link to="/"><button type="button" className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300">Restart</button></Link>
 		</div>
 	));
 	return (
