@@ -1,12 +1,12 @@
 import React from 'react';
 
 import Header from './Components/Header/Header';
-import Game from './Components/Body/body';
 
 // CSS
 import './styleApp.css';
 import Global from './Components/Global/globalCss'; // Global CSS componente
 import './index.css';
+import Nav from './Navigation.tsx';
 
 export default function App() {
   return (
@@ -16,7 +16,7 @@ export default function App() {
         <Header />
       </div>
       <div className="gameScreen">
-        <Game />
+        <Nav />
       </div>
     </div>
 
