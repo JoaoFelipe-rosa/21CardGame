@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Loader from '../Loader/Loader';
 import './styleBody.css';
 
@@ -13,20 +13,29 @@ function Gaming() {
 
 	useEffect(() => {
 		(async () => {
+			//inicia o loader na tela
 			setLoading(false);
-
-			const deckResponse = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+			//Utiliza a PI de cartas para puchar um Deck Id
+			const deckResponse = useCallback(() => {
+				axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
+			}, []);
+			//Armazena o Deck Id da API
 			const deckId = deckResponse.data.deck_id;
-			const cardsResponse = await axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
-			setPile({ pile1: cardsResponse.data.cards.slice(0, 7), pile2: cardsResponse.data.cards.slice(7, 14), pile3: cardsResponse.data.cards.slice(14, 21) });
-
-			console.log('finally');
-			console.log(cardsResponse);
+			//Utilzia o Deck e retira 21 cartas e armazena 
+			const cardsResponse = useCallback(() => {
+				axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
+			}, []);
+			//separa as 21 cartas a cima em 3 pilhas de 7 cartas cada uma
+			const getPile = useCallback(() => {
+				setPile({ pile1: cardsResponse.data.cards.slice(0, 7), pile2: cardsResponse.data.cards.slice(7, 14), pile3: cardsResponse.data.cards.slice(14, 21) });
+			}, []);
+			//Remove o loader da tela
 			setLoading(true);
 		})();
 	}, []);
 
-	function redistributeCards() {
+
+	const redistributeCards = useCallback(() => {
 		const nextPositions = {
 			0: 0,
 			1: 7,
@@ -63,9 +72,9 @@ function Gaming() {
 				pile3: newCards.slice(14, 21),
 			};
 		});
-	}
+	}, []);
 
-	function onClickPile(selectedPile) {
+	const onClickPile = useCallback((selectedPile) => {
 		if (selectedPile === 'pile1') {
 			setPile((prevState) => ({
 				pile1: prevState.pile3,
@@ -86,7 +95,7 @@ function Gaming() {
 			}));
 		}
 		redistributeCards();
-	}
+	}, []);
 
 	function gameStep0() {
 		const cards = useMemo(() => {
@@ -253,7 +262,7 @@ function Gaming() {
 			<div className="flex flex-col items-center">
 				<h1 className="text_main">Is this your card?</h1>
 				<img className="p-9" src={chooseCards.image} alt="choosed card" />
-				<button className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" type="button">Restart Game</button>
+				<button className="p-2 w-1/3 rounded transition ease-in-out delay-150 bg-white hover:-translate-y-1 hover:scale-110 hover:bg-slate-200 duration-300" type="button" onClick={() => setMode('HOME')}>Restart Game</button>
 			</div>
 
 		);
