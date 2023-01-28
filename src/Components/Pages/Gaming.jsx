@@ -1,10 +1,11 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable no-console */
 /* eslint-disable no-tabs */
 /* eslint-disable react/jsx-indent */
 /* eslint-disable react/jsx-indent-props */
 /* eslint-disable indent */
 /* eslint-disable max-len */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -34,7 +35,7 @@ export default function Gaming() {
 		})();
 	}, []);
 
-	function redistributeCards() {
+	const redistributeCards = useCallback(() => {
 		const nextPositions = {
 			0: 0,
 			1: 7,
@@ -71,9 +72,9 @@ export default function Gaming() {
 				pile3: newCards.slice(14, 21),
 			};
 		});
-	}
+	}, []);
 
-	function onClickPile(selectedPile) {
+	const onClickPile = useCallback((selectedPile) => {
 		if (selectedPile === 'pile1') {
 			setPile((prevState) => ({
 				pile1: prevState.pile3,
@@ -94,7 +95,7 @@ export default function Gaming() {
 			}));
 		}
 		redistributeCards();
-	}
+	}, []);
 
 	function gameStep0() {
 		const cards = useMemo(() => {
