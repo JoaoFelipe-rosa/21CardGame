@@ -56,8 +56,8 @@ function GameStep({
             type="button"
             className="gameCards pile0"
             onClick={() => {
-						  onClickPile('pile1');
-						  setGameMode(nextStep);
+              onClickPile('pile1');
+              setGameMode(nextStep);
             }}
           >
             {pile.pile1.map((card) => <img className="Card" src={card.image} key={card.image} alt="card" />)}
@@ -67,8 +67,8 @@ function GameStep({
             type="button"
             className=" gameCards pile1 mx-16"
             onClick={() => {
-						  onClickPile('pile2');
-						  setGameMode(nextStep);
+              onClickPile('pile2');
+              setGameMode(nextStep);
             }}
           >
             {pile.pile2.map((card) => <img className="Card" src={card.image} key={card.image} alt="card" />)}
@@ -78,8 +78,8 @@ function GameStep({
             type="button"
             className="gameCards pile2"
             onClick={() => {
-						  onClickPile('pile3');
-						  (setGameMode(nextStep));
+              onClickPile('pile3');
+              (setGameMode(nextStep));
             }}
           >
             {pile.pile3.map((card) => <img className="Card" src={card.image} key={card.image} alt="card" />)}
@@ -104,7 +104,11 @@ export default function Gaming() {
       const deckResponse = await axios.get('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
       const deckId = deckResponse.data.deck_id;
       const cardsResponse = await axios.get(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=21`);
-      setPile({ pile1: cardsResponse.data.cards.slice(0, 7), pile2: cardsResponse.data.cards.slice(7, 14), pile3: cardsResponse.data.cards.slice(14, 21) });
+      setPile({
+        pile1: cardsResponse.data.cards.slice(0, 7),
+        pile2: cardsResponse.data.cards.slice(7, 14),
+        pile3: cardsResponse.data.cards.slice(14, 21),
+      });
 
       setLoading(true);
     })();
